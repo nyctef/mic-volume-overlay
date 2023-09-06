@@ -1,5 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
+use std::time::Duration;
+
 use eframe::egui;
 use windows::core::{ComInterface, Result};
 use windows::Win32::Media::Audio::Endpoints::IAudioMeterInformation;
@@ -27,6 +29,8 @@ fn main() -> Result<()> {
             egui::CentralPanel::default().show(ctx, |ui| {
                 let level = info.GetPeakValue().unwrap_or(-1_f32);
                 ui.label(format!("Level {level}"));
+
+                ctx.request_repaint_after(Duration::from_millis(100));
             });
         })
         .expect("Failed to run app");
