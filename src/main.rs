@@ -25,7 +25,9 @@ fn main() -> Result<()> {
             ..Default::default()
         };
 
-        eframe::run_simple_native("My egui App", options, move |ctx, _frame| {
+        eframe::run_simple_native("My egui App", options, move |ctx, frame| {
+            frame.set_always_on_top(true);
+
             egui::CentralPanel::default().show(ctx, |ui| {
                 let level = info.GetPeakValue().unwrap_or(-1_f32);
                 ui.label(format!("Level {level}"));
