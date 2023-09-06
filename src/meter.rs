@@ -5,6 +5,9 @@ fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
     let (rect, response) = ui.allocate_at_least(desired_size, egui::Sense::click_and_drag());
 
     let amount = amount.clamp(0.0, 1.0);
+    // TODO: this probably isn't the exact right calculation,
+    // but let's try to make the meter behave more linearly?
+    // amount = (amount.log10() + 1.0) / 2.0;
 
     if ui.is_rect_visible(rect) {
         // TODO
