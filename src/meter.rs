@@ -1,4 +1,8 @@
-use eframe::egui;
+use eframe::{
+    egui,
+    emath::lerp,
+    epaint::{Color32, Rgba},
+};
 
 fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
     let desired_size = ui.spacing().interact_size.y * egui::vec2(1.0, 4.0);
@@ -24,8 +28,9 @@ fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
         let mut inner_rect = rect.shrink(3.0);
         let level = egui::lerp(rect.bottom()..=rect.top(), adjusted_amount);
         inner_rect.set_top(level);
-        ui.painter()
-            .rect_filled(inner_rect, 0.0, visuals.text_color());
+        let mut fill_color = Color32::from(lerp(Rgba::GREEN..=Rgba::RED, adjusted_amount));
+
+        ui.painter().rect_filled(inner_rect, 0.0, fill_color);
 
         // dbg!(rect.top(), inner_rect.top());
     }
