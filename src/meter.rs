@@ -2,7 +2,7 @@ use eframe::egui;
 
 fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
     let desired_size = ui.spacing().interact_size.y * egui::vec2(1.0, 4.0);
-    let (rect, mut response) = ui.allocate_at_least(desired_size, egui::Sense::click_and_drag());
+    let (rect, response) = ui.allocate_at_least(desired_size, egui::Sense::click_and_drag());
 
     let amount = amount.clamp(0.0, 1.0);
 

@@ -3,7 +3,7 @@
 use std::time::Duration;
 
 use eframe::egui;
-use windows::core::{ComInterface, Result};
+use windows::core::Result;
 use windows::Win32::Media::Audio::Endpoints::IAudioMeterInformation;
 use windows::Win32::System::Com::{CoInitialize, CoUninitialize, CLSCTX_INPROC_SERVER};
 use windows::Win32::{Media::Audio::*, System::Com::CoCreateInstance};
