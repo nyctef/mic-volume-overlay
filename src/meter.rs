@@ -28,7 +28,7 @@ fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
         let mut inner_rect = rect.shrink(3.0);
         let level = egui::lerp(rect.bottom()..=rect.top(), adjusted_amount);
         inner_rect.set_top(level);
-        let mut fill_color = Color32::from(lerp(Rgba::GREEN..=Rgba::RED, adjusted_amount));
+        let fill_color = Color32::from(lerp(Rgba::GREEN..=Rgba::RED, adjusted_amount));
 
         ui.painter().rect_filled(inner_rect, 0.0, fill_color);
 
