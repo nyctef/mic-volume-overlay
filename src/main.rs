@@ -8,6 +8,9 @@ use windows::Win32::Media::Audio::Endpoints::IAudioMeterInformation;
 use windows::Win32::System::Com::{CoInitialize, CoUninitialize, CLSCTX_INPROC_SERVER};
 use windows::Win32::{Media::Audio::*, System::Com::CoCreateInstance};
 
+mod meter;
+use meter::meter;
+
 fn main() -> Result<()> {
     unsafe {
         CoInitialize(None)?;
@@ -30,7 +33,7 @@ fn main() -> Result<()> {
 
             egui::CentralPanel::default().show(ctx, |ui| {
                 let level = info.GetPeakValue().unwrap_or(-1_f32);
-                ui.label(format!("Level {level}"));
+                ui.add(meter(level));
 
                 ctx.request_repaint_after(Duration::from_millis(100));
             });
