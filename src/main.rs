@@ -1,3 +1,6 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
+
+use eframe::egui;
 use windows::core::{ComInterface, Result};
 use windows::Win32::Media::Audio::Endpoints::IAudioMeterInformation;
 use windows::Win32::System::Com::{CoInitialize, CoUninitialize, CLSCTX_INPROC_SERVER};
@@ -15,10 +18,23 @@ fn main() -> Result<()> {
 
         let info: IAudioMeterInformation = endpoint.Activate(CLSCTX_INPROC_SERVER, None)?;
 
-        loop {
-            dbg!(info.GetPeakValue()?);
-            std::thread::sleep(std::time::Duration::from_millis(100));
-        }
+        let options = eframe::NativeOptions {
+            initial_window_size: Some(egui::vec2(320.0, 240.0)),
+            ..Default::default()
+        };
+
+        eframe::run_simple_native("My egui App", options, move |ctx, _frame| {
+            egui::CentralPanel::default().show(ctx, |ui| {
+                let level = info.GetPeakValue().unwrap_or(-1_f32);
+                ui.label(format!("Level {level}"));
+            });
+        })
+        .expect("Failed to run app");
+
+        // loop {
+        //     dbg!(info.GetPeakValue()?);
+        //     std::thread::sleep(std::time::Duration::from_millis(100));
+        // }
 
         // TODO: do we need to drop anything?
 
