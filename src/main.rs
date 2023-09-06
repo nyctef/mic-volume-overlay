@@ -24,7 +24,7 @@ fn main() -> Result<()> {
         let info: IAudioMeterInformation = endpoint.Activate(CLSCTX_INPROC_SERVER, None)?;
 
         let options = eframe::NativeOptions {
-            initial_window_size: Some(egui::vec2(320.0, 240.0)),
+            initial_window_size: Some(egui::vec2(50.0, 240.0)),
             ..Default::default()
         };
 
@@ -33,7 +33,13 @@ fn main() -> Result<()> {
 
             egui::CentralPanel::default().show(ctx, |ui| {
                 let level = info.GetPeakValue().unwrap_or(-1_f32);
-                ui.add(meter(level));
+
+                ui.with_layout(
+                    egui::Layout::centered_and_justified(egui::Direction::TopDown),
+                    |ui| {
+                        ui.add(meter(level));
+                    },
+                );
 
                 ctx.request_repaint_after(Duration::from_millis(100));
             });
