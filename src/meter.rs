@@ -7,18 +7,14 @@ fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
     let amount = amount.clamp(0.0, 1.0);
     // TODO: this probably isn't the exact right calculation,
     // but let's try to make the meter behave more linearly?
-    // amount = (amount.log10() + 1.0) / 2.0;
+    let adjusted_amount = (amount.log10() + 3.0) / 4.0;
 
     if ui.is_rect_visible(rect) {
-        // TODO
-        // let lerped = ui
-        //     .ctx()
-        //     .animate_value_with_time(id, target_value, animation_time);
         let visuals = ui.style().interact(&response);
         ui.painter().rect_filled(rect, 0.0, visuals.bg_fill);
 
         let mut inner_rect = rect.shrink(3.0);
-        let level = egui::lerp(rect.bottom()..=rect.top(), amount);
+        let level = egui::lerp(rect.bottom()..=rect.top(), adjusted_amount);
         inner_rect.set_top(level);
         ui.painter()
             .rect_filled(inner_rect, 0.0, visuals.text_color());
