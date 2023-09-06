@@ -10,6 +10,7 @@ fn main() -> Result<()> {
         let device_enumerator: IMMDeviceEnumerator =
             CoCreateInstance(&MMDeviceEnumerator, None, CLSCTX_INPROC_SERVER)?;
 
+        // todo: handle case where the mic we care about isn't set as the default?
         let endpoint = device_enumerator.GetDefaultAudioEndpoint(eCapture, eConsole)?;
 
         let info: IAudioMeterInformation = endpoint.Activate(CLSCTX_INPROC_SERVER, None)?;
