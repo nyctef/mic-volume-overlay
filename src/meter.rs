@@ -15,7 +15,7 @@ fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
         ui.painter().rect_filled(rect, 0.0, visuals.bg_fill);
 
         let mut inner_rect = rect.shrink(3.0);
-        let level = egui::lerp(rect.top()..=rect.bottom(), amount);
+        let level = egui::lerp(rect.bottom()..=rect.top(), amount);
         inner_rect.set_top(level);
         ui.painter()
             .rect_filled(inner_rect, 0.0, visuals.text_color());
