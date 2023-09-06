@@ -7,7 +7,15 @@ fn meter_ui(ui: &mut egui::Ui, amount: f32) -> egui::Response {
     let amount = amount.clamp(0.0, 1.0);
     // TODO: this probably isn't the exact right calculation,
     // but let's try to make the meter behave more linearly?
+    //
     let adjusted_amount = (amount.log10() + 3.0) / 4.0;
+    //
+    // or maybe something like this is more correct?
+    // base_amount is a fudge since log10(0) is undefined
+    //
+    // let base_amount = 0.0001_f32.log10();
+    // let adjusted_amount =
+    //     ((amount + 0.001).log10() - base_amount) / (1.0_f32.log10() - base_amount);
 
     if ui.is_rect_visible(rect) {
         let visuals = ui.style().interact(&response);
