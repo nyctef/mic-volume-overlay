@@ -15,45 +15,46 @@ fn main() -> Result<()> {
     unsafe {
         CoInitialize(None)?;
 
-        let device_enumerator: IMMDeviceEnumerator =
-            CoCreateInstance(&MMDeviceEnumerator, None, CLSCTX_INPROC_SERVER)?;
+        let get_level = get_audio_meter()?;
 
-        // todo: handle case where the mic we care about isn't set as the default?
-        let endpoint = device_enumerator.GetDefaultAudioEndpoint(eCapture, eConsole)?;
-
-        let info: IAudioMeterInformation = endpoint.Activate(CLSCTX_INPROC_SERVER, None)?;
-
-        let options = eframe::NativeOptions {
-            initial_window_size: Some(egui::vec2(50.0, 240.0)),
-            ..Default::default()
-        };
-
-        eframe::run_simple_native("My egui App", options, move |ctx, frame| {
-            frame.set_always_on_top(true);
-
-            egui::CentralPanel::default().show(ctx, |ui| {
-                let level = info.GetPeakValue().unwrap_or(-1_f32);
-
-                ui.with_layout(
-                    egui::Layout::centered_and_justified(egui::Direction::TopDown),
-                    |ui| {
-                        ui.add(meter(level));
-                    },
-                );
-
-                ctx.request_repaint_after(Duration::from_millis(100));
-            });
-        })
-        .expect("Failed to run app");
-
-        // loop {
-        //     dbg!(info.GetPeakValue()?);
-        //     std::thread::sleep(std::time::Duration::from_millis(100));
-        // }
-
-        // TODO: do we need to drop anything?
+        run_ui(get_level);
 
         CoUninitialize();
         Ok(())
     }
+}
+
+unsafe fn get_audio_meter() -> Result<impl Fn() -> f32> {
+    // TODO: do we need to worry about these objects getting dropped
+    // when they go out of scope, making the returned fn invalid?
+    //
+    // alternatively, do we need to manually drop anything?
+    let device_enumerator: IMMDeviceEnumerator =
+        CoCreateInstance(&MMDeviceEnumerator, None, CLSCTX_INPROC_SERVER)?;
+    let endpoint = device_enumerator.GetDefaultAudioEndpoint(eCapture, eConsole)?;
+    let info: IAudioMeterInformation = endpoint.Activate(CLSCTX_INPROC_SERVER, None)?;
+    let get_level = move || info.GetPeakValue().unwrap_or(-1_f32);
+    Ok(get_level)
+}
+
+fn run_ui(get_level: impl Fn() -> f32 + 'static) {
+    let options = eframe::NativeOptions {
+        initial_window_size: Some(egui::vec2(50.0, 240.0)),
+        ..Default::default()
+    };
+    eframe::run_simple_native("My egui App", options, move |ctx, frame| {
+        frame.set_always_on_top(true);
+
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.with_layout(
+                egui::Layout::centered_and_justified(egui::Direction::TopDown),
+                |ui| {
+                    ui.add(meter(get_level()));
+                },
+            );
+
+            ctx.request_repaint_after(Duration::from_millis(100));
+        });
+    })
+    .expect("Failed to run app");
 }
